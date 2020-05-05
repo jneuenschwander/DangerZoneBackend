@@ -16,6 +16,12 @@ module.exports = {
             res.status(500).json({error : "Ocurrio un error db:"+ err})
         }
     },
+    crimeList: async(req,res, next) =>{
+
+        const crimes = await Crime.find({}).distinct('PrimaryType');
+        res.status(200).json(crimes);
+
+    },
     googleMap: async(req,res, next) =>{
         try{
             const crimes = await Crime.find({})
@@ -30,7 +36,24 @@ module.exports = {
         }catch(err){
             res.status(500).json({error : "Ocurrio un error db:"+ err});
         }
-    }
+    },
+    graficaLineal: async(req ,res , next) =>{
+        const primaryType = req.params.toString();
+        /*const crimes = await Crime.find({})
+        .where({Year:{$eq:"2018"},PrimaryType:{$eq:primaryType}});
+        res.json(typeof(crimes));*/
+        const num =Crime.count({PrimaryType:"BURGLARY"})
+        console.log(num);
+    },
+
+    graficaBarras: async(req ,res , next) =>{
+
+
+    },
+    graficaTorta: async(req ,res , next) =>{
+
+
+    },
 
 
 
