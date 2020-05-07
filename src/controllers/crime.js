@@ -38,26 +38,30 @@ module.exports = {
         }
     },
     graficaLineal: async(req ,res , next) =>{
-        const primaryType = req.params.toString();
-        /*const crimes = await Crime.find({})
-        .where({Year:{$eq:"2018"},PrimaryType:{$eq:primaryType}});
-        res.json(typeof(crimes));*/
-        const num =Crime.count({PrimaryType:"BURGLARY"})
-        console.log(num);
+        const primaryType = req.params;
+        
+        Crime.aggregate([ // ya tengo la suma  total ahora es usar la fecha para sacar los datos por mes 
+            {$match: {"Year":2018}}])
+            .group({_id: primaryType  ,count: {$sum: 1}}) // primary corresponde a un valor que puede no estar ligado al primarytype por lo que seria recomendable usar una asociacion
+            .then(r=>res.json(r));
+        
     },
 
-    graficaBarras: async(req ,res , next) =>{
-
-
+    graficaBarras: async(req ,res , next) =>{ // no hay tiempo para hacer algo mas sofisticado asi que dejemoslo asi por ahora.
+        Crime.aggregate([{$match:{"Year":2018}},
+        {$group:{_id:'$PrimaryType',numero_crimenes:{$sum:1}}}])
+        .then(r=>res.json(r));
     },
     graficaTorta: async(req ,res , next) =>{
-
-
+        Crime.aggregate([{$match:{"Year":2018}},
+        {$group:{_id:'$PrimaryType',numero_crimenes:{$div:[{$sum:1},267939]}}}]) //intente sacar porcentajes pero se esta rompiendo
+        .then(r=>res.json(r)); 
     },
 
 
 
-
+ // cantidad de registros de 2018 lo calculo con el comado de abajo
+ //db.crimes.aggregate([{$match:{"Year":2018}},{$group:{_id:2018,numero_crimenes:{$sum:1}}}])=267939
 
 
 };
